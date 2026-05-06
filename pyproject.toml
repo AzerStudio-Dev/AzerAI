@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "azerai"
+version = "5.0.0"
+description = "**AzerAI** - Azərbaycan Dilində Qabaqcıl Səsli AI Asistent"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "AzerStudio Dev", email = "Info.AzerStudioDev@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: MacOS :: MacOS X",
+]
+keywords = ["azerai", "plugins", "ai", "azerbaijani", "real-time", "voice", "assistant", "python", "livekit", "google", "openai"]
+requires-python = ">=3.8"
+
+dependencies = [
+    "livekit",
+    "livekit-agents",
+    "livekit-plugins-silero",
+    "livekit-plugins-noise-cancellation",
+    "livekit-plugins-google",
+    "livekit-plugins-openai",
+    "python-dotenv"
+]
+
+[project.optional-dependencies]
+plugins = [
+    "AzerAI-Plugins-DateTime",
+    "AzerAI-Plugins-Reminder",
+    "AzerAI-Plugins-Search"
+]
+
+[project.urls]
+Homepage = "https://github.com/AzerStudio-Dev/AzerAI"
+Repository = "https://github.com/AzerStudio-Dev/AzerAI.git"
+"Bug Tracker" = "https://github.com/AzerStudio-Dev/AzerAI/issues"
+
+[project.scripts]
+azerai = "azerai.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["azerai*"]
+
+[tool.setuptools.package-data]
+azerai = ["*.txt", "*.md"]
