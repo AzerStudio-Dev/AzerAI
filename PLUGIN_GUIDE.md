@@ -135,22 +135,7 @@ async def my_function(
     ctx: RunContext,
     param: str
 ) -> str:
-    """
-    Plugin funksiyası - parametrlə işləyir.
-    
-    Bu alət giriş parametrini qəbul edib nəticə qaytarır.
-    İstifadə halları:
-    - Test məqsədləri üçün
-    - Parametrlə işləyən funksiya nümunəsi kimi
-    - Plugin strukturunu göstərmək üçün
-    
-    Args:
-        param: Giriş parametri - istənilən mətn dəyəri
-    
-    Returns:
-        Str: Parametrlə birlikdə işlənmiş nəticə
-        Məsələn: "Plugin işlədi: test_parametr"
-    """
+    """Plugin funksiyası - parametrlə işləyir."""
     try:
         result = f"Plugin işlədi: {param}"
         logger.info(f"Plugin nəticə: {result}")
@@ -193,6 +178,14 @@ You can use my_function to process parameters and return results.
 
 Available functions:
 - my_function(param) - Processes the given parameter
+
+Function Details:
+
+1. my_function()
+   - Args:
+     * param (str): Giriş parametri - istənilən mətn dəyəri
+   - Returns: Str - Parametrlə birlikdə işlənmiş nəticə
+     Məsələn: "Plugin işlədi: test_parametr"
 
 When users need to process text or data, use this function.
 
