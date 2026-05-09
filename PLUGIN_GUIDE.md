@@ -136,6 +136,7 @@ async def my_function(
     param: str
 ) -> str:
     """Plugin funksiyası - parametrlə işləyir."""
+    
     try:
         result = f"Plugin işlədi: {param}"
         logger.info(f"Plugin nəticə: {result}")
