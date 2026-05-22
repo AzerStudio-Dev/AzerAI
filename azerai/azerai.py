@@ -36,6 +36,7 @@ class Assistant(Agent):
 
     async def on_user_turn_completed(self, turn_ctx, new_message):
         """İstifadəçi danışığı bitirdikdə çağrılır - yaddaş konteksti əlavə et"""
+
         # Yaddaş kontekstini al və varsa istifadəçi mesajının başına əlavə et
         memory_context = self.memory.get_memory_context()
         if memory_context and new_message.content:
@@ -54,6 +55,7 @@ class Assistant(Agent):
     
     async def store_conversation(self, user_message: str, assistant_message: str):
         """Danışıqı yaddaşda saxla"""
+        
         if user_message and assistant_message:
             self.memory.add_conversation(user_message, assistant_message)
 

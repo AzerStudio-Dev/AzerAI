@@ -20,6 +20,7 @@ class PluginManager:
 
     def check_for_updates(self):
         """PyPI-də yeni versiyaları yoxla"""
+
         try:
             for plugin_name in self.loaded_plugins.keys():
                 if plugin_name.startswith('azerai-plugins-') or plugin_name.startswith('azerai_plugins_') or plugin_name.startswith('AzerAI-Plugins-') or plugin_name.startswith('AzerAI_Plugins_') or plugin_name == 'AzerAI' or 'azerai' in plugin_name:
@@ -35,6 +36,7 @@ class PluginManager:
 
     def _get_installed_version(self, package_name: str) -> str:
         """Qurulmuş paket versiyasını pip show ilə al"""
+
         try:
             result = subprocess.run(['pip', 'show', package_name], capture_output=True, text=True, timeout=5)
             if result.returncode == 0:
@@ -47,6 +49,7 @@ class PluginManager:
 
     def _get_latest_version(self, package_name: str) -> str:
         """PyPI-dən ən son versiyanı al"""
+
         try:
             response = requests.get(f"https://pypi.org/pypi/{package_name}/json", timeout=3)
             if response.status_code == 200:
@@ -58,6 +61,7 @@ class PluginManager:
 
     def discover_plugins(self):
         """Hem lokal hem de pip ile yüklənmiş pluginləri aşkar et"""
+
         # Pip ile yüklənmiş pluginləri yüklə
         self._load_pip_plugins()
         
@@ -66,6 +70,7 @@ class PluginManager:
 
     def _load_pip_plugins(self):
         """Pip ile yüklənmiş pluginləri avtomatik aşkar et"""
+
         # Pip list ilə avtomatik kəşf
         try:
             result = subprocess.run(['pip', 'list'], capture_output=True, text=True)
@@ -98,6 +103,7 @@ class PluginManager:
 
     def _load_local_plugins(self):
         """Lokal pluginləri yüklə"""
+
         # Çoxlu yerlərdə plugin qovluğu axtar - daha çevik yanaşma
         possible_paths = [
             # 1. AzerAI qovluğunun yanında
@@ -151,6 +157,7 @@ class PluginManager:
 
     def _get_plugin_info(self, module, plugin_name: str) -> Dict[str, Any]:
         """Plugin məlumatlarını yalnız info.py faylından alır"""
+
         base_info = {
             'name': plugin_name,
             'module': module,
@@ -187,6 +194,7 @@ class PluginManager:
 
     def _extract_tools(self, module) -> List[Any]:
         """Moduldan @function_tool ilə işarələnmiş funksiyaları çıxar"""
+
         tools = []
         
         try:
@@ -220,6 +228,7 @@ class PluginManager:
 
     def get_all_tools(self) -> List[Any]:
         """Bütün yüklənmiş pluginlərdən tool-ları qaytarır"""
+
         all_tools = []
         for plugin_name, plugin_data in self.loaded_plugins.items():
             if 'tools' in plugin_data:
@@ -247,6 +256,7 @@ class PluginManager:
 
     def get_plugin_updates(self) -> str:
         """Yeni versiya məlumatlarını qaytarır"""
+
         updates = []
         
         for plugin_name in self.loaded_plugins.keys():
@@ -265,6 +275,7 @@ class PluginManager:
 
     def get_plugin_prompts(self) -> str:
         """Plugin promptlarını qaytarır"""
+
         prompt_parts = ["AzerAI Sistem və Plugin xüsusiyyətləri:"]
         
         # AzerAI öz məlumatlarını əlavə et
@@ -319,16 +330,20 @@ plugin_manager = PluginManager()
 # Geri qaytarılma uyğunluğu üçün ixrac funksiyaları
 def get_all_tools() -> List[Any]:
         """Bütün yüklənmiş pluginlərdən tool-ları qaytarır"""
+
         return plugin_manager.get_all_tools()
 
 def get_plugin_info() -> str:
     """Plugin məlumatlarını qaytarır"""
+
     return plugin_manager.get_plugin_info()
 
 def get_plugin_prompts() -> str:
     """Plugin promptlarını qaytarır"""
+
     return plugin_manager.get_plugin_prompts()
 
 def get_plugin_updates() -> str:
     """Yeni versiya məlumatlarını qaytarır"""
+    
     return plugin_manager.get_plugin_updates()

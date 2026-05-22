@@ -15,12 +15,14 @@ class MemoryManager:
 
     def _ensure_memory_file(self):
         """Yaddaş faylının varlığını yoxla və yoxsa yarat"""
+
         if not os.path.exists(self.memory_file):
             with open(self.memory_file, 'w', encoding='utf-8') as f:
                 json.dump([], f)
 
     def _load_conversations(self) -> List[Dict[str, Any]]:
         """Danışıqları fayldan yüklə"""
+
         try:
             if not os.path.exists(self.memory_file):
                 return []
@@ -34,6 +36,7 @@ class MemoryManager:
 
     def _save_conversations(self, conversations: List[Dict[str, Any]]):
         """Danışıqları fayla saxla"""
+
         try:
             with open(self.memory_file, 'w', encoding='utf-8') as f:
                 json.dump(conversations, f, ensure_ascii=False, indent=2)
@@ -42,6 +45,7 @@ class MemoryManager:
 
     def _cleanup_old_conversations(self, conversations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Köhnə danışıqları təmizlə"""
+
         cutoff_date = datetime.now() - timedelta(days=self.max_age_days)
         filtered_conversations = []
         
@@ -61,6 +65,7 @@ class MemoryManager:
 
     def add_conversation(self, user_message: str, assistant_message: str):
         """Yeni danışıq əlavə et"""
+
         conversations = self._load_conversations()
         
         new_conversation = {
@@ -75,6 +80,7 @@ class MemoryManager:
 
     def get_memory_context(self) -> str:
         """Yaddaş kontekstini qaytar"""
+
         conversations = self._load_conversations()
         
         if not conversations:
@@ -92,9 +98,11 @@ class MemoryManager:
 
     def clear_memory(self):
         """Yaddaşı təmizlə"""
+
         self._save_conversations([])
 
     def get_conversation_count(self) -> int:
         """Danışıq sayısını qaytar"""
+        
         conversations = self._load_conversations()
         return len(conversations)

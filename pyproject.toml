@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "azerai"
-version = "5.0.0"
+version = "5.0.1"
 description = "**AzerAI** - Azərbaycan Dilində Qabaqcıl Səsli AI Asistent"
 readme = "README.md"
 license = {text = "MIT"}
