@@ -118,17 +118,22 @@ async def my_agent(ctx: agents.JobContext):
     def on_conversation_item(event):
         nonlocal last_user_message
         message = event.item
-        
+
+        # conversation_item_added həm ChatMessage, həm də AgentHandoff göndərə bilər.
+        # AgentHandoff-də role/text_content olmur, ona görə əvvəlcə təhlükəsiz yoxla.
+        role = getattr(message, "role", None)
+        text_content = getattr(message, "text_content", None)
+
         # İstifadəçi mesajı olub olmadığını yoxla
-        if message.role == "user" and message.text_content:
-            last_user_message = message.text_content
-        
+        if role == "user" and text_content:
+            last_user_message = text_content
+
         # Asistan mesajı olub olmadığını və uyğunlaşdırmaq üçün bir istifadəçi mesajı olub olmadığını yoxla
-        elif message.role == "assistant" and message.text_content and last_user_message:
+        elif role == "assistant" and text_content and last_user_message:
             # Danışıq cütünü saxla
             asyncio.create_task(assistant.store_conversation(
                 last_user_message, 
-                message.text_content
+                text_content
             ))
             last_user_message = None  # Saxladıqdan sonra sıfırla
 
