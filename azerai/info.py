@@ -3,7 +3,7 @@ AzerAI Info - Haqqında Məlumatlar Və Metadata
 """
 AZERAI_INFO = {
     "name": "azerai",
-    "version": "5.0.3",
+    "version": "5.0.4",
     "author": "AzerStudio Dev",
     "description": "**AzerAI** - Azərbaycan Dilində Qabaqcıl Səsli AI Asistent",
     "license": "MIT",
