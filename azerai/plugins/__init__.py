@@ -16,7 +16,7 @@ class PluginManager:
         self.loaded_plugins = {}
         self.plugin_tools = {}
         self.discover_plugins()
-        self.check_for_updates()
+        self.check_for_updates()  # Hızlı versiya kontrolü
 
     def check_for_updates(self):
         """PyPI-də yeni versiyaları yoxla"""
@@ -38,7 +38,7 @@ class PluginManager:
         """Qurulmuş paket versiyasını pip show ilə al"""
 
         try:
-            result = subprocess.run(['pip', 'show', package_name], capture_output=True, text=True, timeout=5)
+            result = subprocess.run(['pip', 'show', package_name], capture_output=True, text=True, timeout=1)
             if result.returncode == 0:
                 for line in result.stdout.split('\n'):
                     if line.startswith('Version:'):
@@ -51,7 +51,7 @@ class PluginManager:
         """PyPI-dən ən son versiyanı al"""
 
         try:
-            response = requests.get(f"https://pypi.org/pypi/{package_name}/json", timeout=3)
+            response = requests.get(f"https://pypi.org/pypi/{package_name}/json", timeout=1)
             if response.status_code == 200:
                 data = response.json()
                 return data.get('info', {}).get('version', '')
@@ -71,9 +71,14 @@ class PluginManager:
     def _load_pip_plugins(self):
         """Pip ile yüklənmiş pluginləri avtomatik aşkar et"""
 
-        # Pip list ilə avtomatik kəşf
+        # Pip list ilə avtomatik kəşf - doğru python executable ile
         try:
-            result = subprocess.run(['pip', 'list'], capture_output=True, text=True)
+            python_exe = sys.executable
+            pip_path = os.path.join(os.path.dirname(python_exe), 'pip.exe' if os.name == 'nt' else 'pip')
+            if not os.path.exists(pip_path):
+                pip_path = os.path.join(os.path.dirname(python_exe), 'Scripts', 'pip.exe') if os.name == 'nt' else 'pip'
+
+            result = subprocess.run([python_exe, '-m', 'pip', 'list'], capture_output=True, text=True)
             if result.returncode == 0:
                 for line in result.stdout.split('\n'):
                     if line.startswith('azerai-plugins-') or line.startswith('azerai_plugins_') or line.startswith('AzerAI-Plugins-') or line.startswith('AzerAI_Plugins_') or line.startswith('azerai') or line.startswith('AzerAI'):
@@ -85,10 +90,10 @@ class PluginManager:
                         module_name = plugin_name.replace('-', '_').lower()
                         try:
                             module = importlib.import_module(module_name)
-                            
+
                             # Info faylından detallı məlumatları yoxla
                             plugin_info = self._get_plugin_info(module, plugin_name)
-                            
+
                             self.loaded_plugins[plugin_name] = plugin_info
                             print(f"[OK] {plugin_name}")
                         except ImportError as e:

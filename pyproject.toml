@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "azerai"
-version = "5.0.2"
+version = "5.0.3"
 description = "**AzerAI** - Azərbaycan Dilində Qabaqcıl Səsli AI Asistent"
 readme = "README.md"
 license = {text = "MIT"}
@@ -29,7 +29,7 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: MacOS :: MacOS X",
 ]
-keywords = ["azerai", "plugins", "ai", "azerbaijani", "real-time", "voice", "assistant", "python", "livekit", "google", "openai"]
+keywords = ["azer", "azer ai", "azerai", "plugins", "ai", "azerbaijani", "real-time", "voice", "assistant", "python", "livekit", "google", "openai"]
 requires-python = ">=3.8"
 
 dependencies = [

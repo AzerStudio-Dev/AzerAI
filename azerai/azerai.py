@@ -63,9 +63,7 @@ server = AgentServer()
 
 @server.rtc_session(agent_name="") # Agent adı
 async def my_agent(ctx: agents.JobContext):
-    plugin_info = get_plugin_info()
-    plugin_prompts = get_plugin_prompts()
-    plugin_updates = get_plugin_updates()
+    # Plugin bilgileri zaten Assistant'ta yükleniyor, tekrar çağrılmıyor
     all_tools = get_all_tools()
     # Yaddaşda saxlamaq üçün danışıq cütlüklərini izlə
     last_user_message = None
