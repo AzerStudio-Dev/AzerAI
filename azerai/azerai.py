@@ -3,7 +3,9 @@ AzerAI - Əsas Assistant Sinifi
 """
 from dotenv import load_dotenv
 import asyncio
-from livekit import agents, rtc
+import os
+from livekit import agents, rtc, api
+from livekit.api import UpdateParticipantRequest
 from livekit.agents import AgentServer, AgentSession, Agent, room_io, FunctionToolsExecutedEvent
 from livekit.plugins import (
     google,
@@ -14,9 +16,17 @@ from livekit.plugins import (
 from .plugins import get_all_tools, get_plugin_info, get_plugin_prompts, get_plugin_updates
 from .prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
 from .memory import MemoryManager
+from .auto_run import run_manager_script_in_background
 
 load_dotenv(".env")
 load_dotenv(".env.local")
+
+LIVEKIT_URL = os.getenv("LIVEKIT_URL")
+API_KEY = os.getenv("LIVEKIT_API_KEY")
+API_SECRET = os.getenv("LIVEKIT_API_SECRET")
+LIVEKIT_AGENT_NAME = os.getenv("LIVEKIT_AGENT_NAME")
+if not LIVEKIT_AGENT_NAME:
+    LIVEKIT_AGENT_NAME = "AzerAI"
 
 class Assistant(Agent):
     def __init__(self) -> None:
@@ -61,7 +71,7 @@ class Assistant(Agent):
 
 server = AgentServer()
 
-@server.rtc_session(agent_name="") # Agent adı
+@server.rtc_session(agent_name=LIVEKIT_AGENT_NAME) # Agent adı
 async def my_agent(ctx: agents.JobContext):
     # Plugin bilgileri zaten Assistant'ta yükleniyor, tekrar çağrılmıyor
     all_tools = get_all_tools()
@@ -87,7 +97,9 @@ async def my_agent(ctx: agents.JobContext):
         print("🤖 OpenAI Realtime Model istifadə olunur...")
     else:
         # Defolt - Google
-        llm_model = google.realtime.RealtimeModel(
+        llm_model = google.beta.realtime.RealtimeModel(
+	    proactivity=True,
+    	    enable_affective_dialog=True,
             voice="Puck"
         )
         print("🤖 Google Realtime Model istifadə olunur...")
@@ -143,6 +155,9 @@ async def my_agent(ctx: agents.JobContext):
         agent=assistant,
         # Otaq giriş konfiqurasiyası
         room_options=room_io.RoomOptions(
+	    #İstifadəçi ayrılsa da Agent bağlanmır
+	    close_on_disconnect=False,
+
             # Video dəstəyi aktiv et
             video_input=room_io.VideoInputOptions(),
             
@@ -154,6 +169,19 @@ async def my_agent(ctx: agents.JobContext):
             ),
         ),
     )
+
+    # 🎯 QƏTİ HƏLL: LIVEKIT SERVER API İLƏ AD YENİLƏMƏ
+    try:
+        async with api.LiveKitAPI(LIVEKIT_URL, API_KEY, API_SECRET) as lkapi:
+            await lkapi.room.update_participant(UpdateParticipantRequest(
+                room=ctx.room.name,
+                identity=ctx.room.local_participant.identity,
+                name=LIVEKIT_AGENT_NAME,       
+                metadata=LIVEKIT_AGENT_NAME    
+            ))
+            print(f"✅ [Server API] Assistant adı '{LIVEKIT_AGENT_NAME}' olaraq yeniləndi.")
+    except Exception as e:
+        print(f"❌ Ad yenilənərkən server xətası baş verdi: {e}")
 
     # Reminder plugin-ünə session referansını ver (əgər plugin mövcuddursa)
     try:
@@ -173,4 +201,8 @@ async def my_agent(ctx: agents.JobContext):
 
 
 if __name__ == "__main__":
+    import sys
+    if run_manager_script_in_background and any(arg in sys.argv for arg in ["start", "dev"]):
+        run_manager_script_in_background(target_agent=LIVEKIT_AGENT_NAME)
+
     agents.cli.run_app(server)

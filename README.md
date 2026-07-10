@@ -1,4 +1,8 @@
-# 🤖 AzerAI
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AzerStudio-Dev/AzerAI/refs/heads/main/azerai/logo/icon.png" alt="AzerAI Logo" width="140">
+</p>
+
+<h1 align="center">AzerAI</h1>
 
 **AzerAI** - Azərbaycan dilində qabaqcıl səsli AI Asistent
 plugin əsaslı, çoxdilli AI asistent framework
@@ -47,6 +51,9 @@ pip install -e .
 LIVEKIT_API_KEY=your_api_key
 LIVEKIT_API_SECRET=your_api_secret
 LIVEKIT_URL=wss://your-livekit-server.com
+
+# LiveKit Agent Adı
+LIVEKIT_AGENT_NAME=AzerAI
 
 # AI Model API Açarı Parametrləri
 GOOGLE_API_KEY=your_google_api_key
