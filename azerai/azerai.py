@@ -4,6 +4,8 @@ AzerAI - Əsas Assistant Sinifi
 from dotenv import load_dotenv
 import asyncio
 import os
+import json
+from pathlib import Path
 from livekit import agents, rtc, api
 from livekit.api import UpdateParticipantRequest
 from livekit.agents import AgentServer, AgentSession, Agent, room_io, FunctionToolsExecutedEvent
@@ -77,6 +79,19 @@ async def my_agent(ctx: agents.JobContext):
     all_tools = get_all_tools()
     # Yaddaşda saxlamaq üçün danışıq cütlüklərini izlə
     last_user_message = None
+    
+    # azerai_created_agents.json dosyasından agent isimlerini al
+    agents_file = Path("azerai_created_agents.json")
+    created_agents = {}
+    if agents_file.exists():
+        try:
+            with open(agents_file, 'r', encoding='utf-8') as f:
+                created_agents = json.load(f)
+            print(f"✅ [AzerAI] {len(created_agents)} agent yükləndi: {list(created_agents.keys())}")
+        except Exception as e:
+            print(f"❌ [AzerAI] Agentlər yüklənərkən xəta: {e}")
+    else:
+        print(f"ℹ️ [AzerAI] azerai_created_agents.json faylı tapılmadı")
 
     # Asistan nümunəsi yarat
     assistant = Assistant()
@@ -150,6 +165,40 @@ async def my_agent(ctx: agents.JobContext):
     # Əvvəlcə otağa qoşuluruq
     await ctx.connect()
 
+    # Agentlərdən gələn verileri almaq üçün data_received event handler
+    @ctx.room.on("data_received")
+    def on_data_received(*args):
+        try:
+            if not args: return
+            raw_data = args[0].data if hasattr(args[0], 'data') else args[0]
+            payload = json.loads(raw_data.decode('utf-8'))
+            
+            # Ana agentə və ya yaradılmış agentlərə göndərilən mesajları işlə
+            target = payload.get("target")
+            if target and target != LIVEKIT_AGENT_NAME and target not in created_agents:
+                return
+            
+            sender = payload.get("sender")
+            status = payload.get("status")
+            task = payload.get("task")
+            result = payload.get("result")
+            
+            print(f"📨 [AzerAI] Agentdən veri alındı:")
+            print(f"   - Göndərən: {sender}")
+            print(f"   - Status: {status}")
+            print(f"   - Tapşırıq: {task}")
+            if result:
+                print(f"   - Nəticə: {result}")
+            
+            # Agent nəticəsini istifadəçiyə bildirmək üçün session'a mesaj əlavə et
+            if status == "completed" and result:
+                asyncio.create_task(session.generate_reply(
+                    instructions=f"Agent '{sender}' tapşırığı '{task}' üçün nəticəni göndərdi: {result}. İstifadəçiyə bu nəticəni bildir."
+                ))
+                
+        except Exception as e:
+            print(f"❌ [AzerAI] Veri alarkən xəta: {e}")
+
     await session.start(
         room=ctx.room,
         agent=assistant,
@@ -163,9 +212,9 @@ async def my_agent(ctx: agents.JobContext):
             
             # LiveKit Cloud təkmilləşdirilmiş gürültü aradan qaldırma
             # - Əgər self-hosting istifadə edirsinizsə, bu parametri buraxın
-            # - Telephony proqramları üçün ən yaxşı nəticə üçün `BVCTelephony` istifadə edin
+            # - Telephony proqramları üçün ən yaxşı nəticə üçün `BVCTelephony` istifadə edin amma standart `BVC()` istifadə edin
             audio_input=room_io.AudioInputOptions(
-                noise_cancellation=lambda params: noise_cancellation.BVCTelephony() if params.participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_SIP else noise_cancellation.BVC(),
+                noise_cancellation=noise_cancellation.BVC(),
             ),
         ),
     )
