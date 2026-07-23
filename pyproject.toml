@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "azerai"
-version = "5.0.6"
+version = "5.0.7"
 description = "**AzerAI** - Azərbaycan Dilində Qabaqcıl Səsli AI Asistent"
 readme = "README.md"
 license = {text = "MIT"}
@@ -46,7 +46,11 @@ dependencies = [
 plugins = [
     "AzerAI-Plugins-DateTime",
     "AzerAI-Plugins-Reminder",
-    "AzerAI-Plugins-Search"
+    "AzerAI-Plugins-Search",
+    "AzerAI-Plugins-Selenium",
+    "AzerAI-Plugins-Shell",
+    "AzerAI-Plugins-Python-Execute",
+    "AzerAI-Plugins-Agent-Creator"
 ]
 
 [project.urls]

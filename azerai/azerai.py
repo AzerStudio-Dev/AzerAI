@@ -13,7 +13,7 @@ from livekit.plugins import (
     google,
     openai,
     silero,
-    noise_cancellation,
+    #noise_cancellation,
 )
 from .plugins import get_all_tools, get_plugin_info, get_plugin_prompts, get_plugin_updates
 from .prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
@@ -213,9 +213,10 @@ async def my_agent(ctx: agents.JobContext):
             # LiveKit Cloud təkmilləşdirilmiş gürültü aradan qaldırma
             # - Əgər self-hosting istifadə edirsinizsə, bu parametri buraxın
             # - Telephony proqramları üçün ən yaxşı nəticə üçün `BVCTelephony` istifadə edin amma standart `BVC()` istifadə edin
-            audio_input=room_io.AudioInputOptions(
-                noise_cancellation=noise_cancellation.BVC(),
-            ),
+
+            #audio_input=room_io.AudioInputOptions(
+             #   noise_cancellation=noise_cancellation.BVC(),
+            #),
         ),
     )
 
